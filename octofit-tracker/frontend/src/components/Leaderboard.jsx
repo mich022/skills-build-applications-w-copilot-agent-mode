@@ -9,10 +9,10 @@ function Leaderboard() {
   useEffect(() => {
     const codespaceName = import.meta.env.VITE_CODESPACE_NAME;
     const baseUrl = codespaceName && codespaceName.trim()
-      ? `https://${codespaceName}-8000.app.github.dev/api`
-      : 'http://localhost:8000/api';
+      ? `https://${codespaceName}-8000.app.github.dev/api/leaderboard`
+      : 'http://localhost:8000/api/leaderboard';
 
-    fetch(`${baseUrl}/leaderboard`)
+    fetch(baseUrl)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Failed to fetch leaderboard: ${response.status} ${response.statusText}`);

@@ -9,10 +9,10 @@ function Activities() {
   useEffect(() => {
     const codespaceName = import.meta.env.VITE_CODESPACE_NAME;
     const baseUrl = codespaceName && codespaceName.trim()
-      ? `https://${codespaceName}-8000.app.github.dev/api`
-      : 'http://localhost:8000/api';
+      ? `https://${codespaceName}-8000.app.github.dev/api/activities`
+      : 'http://localhost:8000/api/activities';
 
-    fetch(`${baseUrl}/activities`)
+    fetch(baseUrl)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Failed to fetch activities: ${response.status} ${response.statusText}`);
