@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiBaseUrl, fetchResource, isCodespaceApi } from '../api';
+import { apiBaseUrl, isCodespaceApi } from '../api';
 
 function Users() {
   const [users, setUsers] = useState([]);
@@ -7,8 +7,30 @@ function Users() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchResource('users')
-      .then(setUsers)
+    const codespaceName = import.meta.env.VITE_CODESPACE_NAME;
+    const baseUrl = codespaceName && codespaceName.trim()
+      ? `https://${codespaceName}-8000.app.github.dev/api`
+      : 'http://localhost:8000/api';
+
+    fetch(`${baseUrl}/users`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch users: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then((payload) => {
+        const data =
+          payload.data ||
+          payload.items ||
+          payload.results ||
+          payload.activities ||
+          payload.users ||
+          payload.teams ||
+          payload.workouts ||
+          payload.leaderboard;
+        setUsers(Array.isArray(data) ? data : []);
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);

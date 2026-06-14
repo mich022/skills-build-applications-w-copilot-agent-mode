@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { apiBaseUrl, fetchResource, isCodespaceApi } from '../api';
+import { apiBaseUrl, isCodespaceApi } from '../api';
 
 function Teams() {
   const [teams, setTeams] = useState([]);
@@ -7,8 +7,30 @@ function Teams() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchResource('teams')
-      .then(setTeams)
+    const codespaceName = import.meta.env.VITE_CODESPACE_NAME;
+    const baseUrl = codespaceName && codespaceName.trim()
+      ? `https://${codespaceName}-8000.app.github.dev/api`
+      : 'http://localhost:8000/api';
+
+    fetch(`${baseUrl}/teams`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch teams: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then((payload) => {
+        const data =
+          payload.data ||
+          payload.items ||
+          payload.results ||
+          payload.activities ||
+          payload.users ||
+          payload.teams ||
+          payload.workouts ||
+          payload.leaderboard;
+        setTeams(Array.isArray(data) ? data : []);
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
